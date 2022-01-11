@@ -141,10 +141,13 @@ class PubClient {
     String? publisher,
     String? dependency,
   }) async {
-    final publisherQuery = publisher != null ? 'publisher:$publisher ' : '';
-    final dependencyQuery = dependency != null ? 'dependency:$dependency ' : '';
+    final queryParameters = [
+      if (publisher != null) 'publisher:$publisher',
+      if (dependency != null) 'dependency:$dependency',
+      query,
+    ];
     final data = await _fetch(endpoint.search(
-      '$publisherQuery$dependencyQuery$query',
+      queryParameters.join('+'),
       page,
       sort,
     ));
@@ -154,7 +157,7 @@ class PubClient {
   /// Receives [nextPageUrl]
   /// returns `SearchResults`
   Future<SearchResults> nextPage(String nextPageUrl) async {
-    final data = await _fetch(nextPageUrl);
+    final data = await _fetch(endpoint.nextPage(nextPageUrl));
     return SearchResults.fromJson(data);
   }
 
