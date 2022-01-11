@@ -31,7 +31,7 @@ class PubClient {
     this.pubUrl,
     this.credentials,
     this.client,
-  }): endpoint = Endpoint(pubUrl) {
+  }) : endpoint = Endpoint(pubUrl) {
     http.Client httpClient;
     if (credentials == null) {
       httpClient = http.Client();
@@ -140,13 +140,10 @@ class PubClient {
     String? publisher,
     String? dependency,
   }) async {
-    final queryParameters = [
-      if (query.isNotEmpty) query,
-      if (publisher != null) 'publisher:$publisher',
-      if (dependency != null) 'dependency:$dependency',
-    ];
+    final publisherQuery = publisher != null ? 'publisher:$publisher ' : '';
+    final dependencyQuery = dependency != null ? 'dependency:$dependency ' : '';
     final data = await _fetch(endpoint.search(
-      queryParameters.join('+'),
+      '$publisherQuery$dependencyQuery$query',
       page,
       sort,
     ));
