@@ -45,7 +45,10 @@ class Endpoint {
       '$packageUrl/$name/versions/$version';
 
   /// Retrieve all package names on pub.dev
-  String get packageNameCompletion => '$apiUrl/package-names';
+  String get packageNames => '$apiUrl/package-names';
+
+  /// Package names for name completion
+  String get packageNameCompletion => '$apiUrl/package-name-completion-data';
 
   /// Url to add and remove likes
   String likePackage(String name) => '$accountUrl/likes/$name';

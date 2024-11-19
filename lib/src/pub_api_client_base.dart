@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'package:oauth2/oauth2.dart';
@@ -54,7 +55,7 @@ class PubClient {
 
   Future<Map<String, dynamic>> _fetch(String url) async {
     if (debug) {
-      print('Fetching: $url');
+      log('Fetching: $url');
     }
     final response = await _client.get(
       Uri.parse(url),
@@ -88,6 +89,7 @@ class PubClient {
   /// Returns the `PubPackage` information for [packageName]
   Future<PubPackage> packageInfo(String packageName) async {
     final data = await _fetch(endpoint.packageInfo(packageName));
+
     return PubPackage.fromMap(data);
   }
 
@@ -138,6 +140,16 @@ class PubClient {
       endpoint.packageVersionInfo(packageName, version),
     );
     return PackageVersion.fromMap(data);
+  }
+
+  /// Returns a `List<String>` of all packages listed on pub.dev
+  Future<List<String>> packageNames() async {
+    final data = await _fetch(endpoint.packageNames);
+    final results = PackageNamesResults.fromMap(data);
+    return recursivePaging(results, (url) async {
+      final data = await _fetch(endpoint.nextPage(url));
+      return PackageNamesResults.fromMap(data);
+    });
   }
 
   /// Package names for name completion
